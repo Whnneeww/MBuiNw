@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZIPファイル生成</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <button id="generateZip">ZIPファイルを生成してダウンロード</button>
+
+    <script>
+    document.getElementById('generateZip').addEventListener('click', function() {
+        const zip = new JSZip();
+        const folder = zip.folder("files"); // フォルダを作成
+
+        // 例として、複数のテキストファイルを生成します。
+        const fileContents = [
+            { name: "file1.txt", content: "これはファイル1の内容です。" },
+            { name: "file2.txt", content: "これはファイル2の内容です。" },
+            { name: "file3.txt", content: "これはファイル3の内容です。" },
+        ];
+
+        fileContents.forEach(file => {
+            folder.file(file.name, file.content); // 各ファイルを追加
+        });
+
+        // ZIPファイルを生成
+        zip.generateAsync({ type: "blob" }).then(function(content) {
+            // ZIPファイルをダウンロード
+            const a = document.createElement("a");
+            const url = URL.createObjectURL(content);
+            a.href = url;
+            a.download = "files.zip"; // ダウンロードするファイル名
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // オブジェクトURLを解放
+        });
+    });
+    </script>
+</body>
+</html>
