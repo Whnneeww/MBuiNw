@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZIPファイル生成</title>
+    <title>ユーザーアップロードファイルをZIPにする</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
+    <input type="file" id="fileInput" multiple />
     <button id="generateZip">ZIPファイルを生成してダウンロード</button>
 
     <script>
     document.getElementById('generateZip').addEventListener('click', function() {
+        const files = document.getElementById('fileInput').files;
+        
+        if (files.length === 0) {
+            alert("ファイルを選択してください。");
+            return;
+        }
+
         const zip = new JSZip();
-        const folder = zip.folder("files"); // フォルダを作成
-
-        // 例として、複数のテキストファイルを生成します。
-        const fileContents = [
-            { name: "file1.txt", content: "これはファイル1の内容です。" },
-            { name: "file2.txt", content: "これはファイル2の内容です。" },
-            { name: "file3.txt", content: "これはファイル3の内容です。" },
-        ];
-
-        fileContents.forEach(file => {
-            folder.file(file.name, file.content); // 各ファイルを追加
+        
+        // アップロードされたファイルをZIPに追加
+        Array.from(files).forEach(file => {
+            zip.file(file.name, file); // ファイルを追加
         });
 
         // ZIPファイルを生成
@@ -31,7 +32,7 @@
             const a = document.createElement("a");
             const url = URL.createObjectURL(content);
             a.href = url;
-            a.download = "files.zip"; // ダウンロードするファイル名
+            a.download = "uploaded_files.zip"; // ダウンロードするファイル名
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
